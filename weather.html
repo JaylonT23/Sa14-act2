@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Dashboard</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .weather-info {
+        margin-top: 20px;
+    }
+    .forecast {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .forecast-item {
+        flex: 1;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <h1>Weather Dashboard</h1>
+    <form id="weather-form" class="form-group">
+        <input type="text" id="city-input" placeholder="Enter city name" required>
+        <button type="submit">Get Weather</button>
+    </form>
+    <div id="weather-info" class="weather-info"></div>
+</div>
+
+<script>
+    const weatherForm = document.getElementById('weather-form');
+    const cityInput = document.getElementById('city-input');
+    const weatherInfoDiv = document.getElementById('weather-info');
+
+    const API_KEY = 'YOUR_API_KEY'; // Replace with your WeatherAPI key
+
+    weatherForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const city = cityInput.value.trim();
+
+        try {
+            const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=5`);
+            const data = await response.json();
+
+            if (data.error) {
+                weatherInfoDiv.innerHTML = `<p>${data.error.message}</p>`;
+                return;
+            }
+
+            const currentWeather = data.current;
+            const forecast = data.forecast.forecastday;
+
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const currentMinute = currentTime.getMinutes();
+            const formattedTime = `${currentHour}:${currentMinute < 10 ? '0' + currentMinute : currentMinute}`;
+
+            let forecastHTML = '';
+            forecast.forEach(day => {
+                const date = new Date(day.date);
+                const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+                const iconUrl = day.day.condition.icon;
+                const maxTemp = day.day.maxtemp_c;
+                const minTemp = day.day.mintemp_c;
+                forecastHTML += `
+                    <div class="forecast-item">
+                        <p>${dayOfWeek}</p>
+                        <img src="${iconUrl}" alt="${day.day.condition.text}">
+                        <p>Max Temp: ${maxTemp}&deg;C</p>
+                        <p>Min Temp: ${minTemp}&deg;C</p>
+                    </div>
+                `;
+            });
+
+            weatherInfoDiv.innerHTML = `
+                <p>Current Time: ${formattedTime}</p>
+                <p>Current Temperature: ${currentWeather.temp_c}&deg;C</p>
+                <img src="${currentWeather.condition.icon}" alt="${currentWeather.condition.text}">
+                <p>Humidity: ${currentWeather.humidity}%</p>
+                <h2>5-Day Forecast</h2>
+                <div class="forecast">${forecastHTML}</div>
+            `;
+        } catch (error) {
+            weatherInfoDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        }
+    });
+</script>
+
+</body>
+</html>

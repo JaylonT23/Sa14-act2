@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo List</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    #todo-list {
+        margin-top: 20px;
+    }
+    .task {
+        margin-bottom: 10px;
+    }
+    .task input[type="text"] {
+        width: 200px;
+    }
+    .task button {
+        margin-left: 5px;
+    }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <h1>Todo List</h1>
+    <form id="todo-form">
+        <input type="text" id="task-title" placeholder="Task Title" required>
+        <input type="text" id="task-details" placeholder="Task Details">
+        <button type="submit">Add Task</button>
+    </form>
+    <div id="todo-list"></div>
+</div>
+
+<script>
+    const todoForm = document.getElementById('todo-form');
+    const taskTitleInput = document.getElementById('task-title');
+    const taskDetailsInput = document.getElementById('task-details');
+    const todoList = document.getElementById('todo-list');
+
+    let tasks = [];
+
+    function renderTasks() {
+        todoList.innerHTML = '';
+        tasks.forEach((task, index) => {
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'task';
+            taskDiv.innerHTML = `
+                <span>${task.title}</span>
+                <span>${task.details}</span>
+                <button onclick="editTask(${index})">Edit</button>
+                <button onclick="deleteTask(${index})">Delete</button>
+            `;
+            todoList.appendChild(taskDiv);
+        });
+    }
+
+    function addTask(title, details) {
+        tasks.push({ title, details });
+        renderTasks();
+    }
+
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        renderTasks();
+    }
+
+    function editTask(index) {
+        const newTitle = prompt('Enter new title:');
+        const newDetails = prompt('Enter new details:');
+        if (newTitle !== null && newDetails !== null) {
+            tasks[index].title = newTitle;
+            tasks[index].details = newDetails;
+            renderTasks();
+        }
+    }
+
+    todoForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const title = taskTitleInput.value.trim();
+        const details = taskDetailsInput.value.trim();
+        if (title !== '') {
+            addTask(title, details);
+            taskTitleInput.value = '';
+            taskDetailsInput.value = '';
+        } else {
+            alert('Please enter a task title.');
+        }
+    });
+
+</script>
+
+</body>
+</html>

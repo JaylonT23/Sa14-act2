@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Currency Converter</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <h1>Currency Converter</h1>
+    <form id="currency-form">
+        <div class="form-group">
+            <label for="source-currency">Source Currency:</label>
+            <select id="source-currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="target-currency">Target Currency:</label>
+            <select id="target-currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" min="0" step="0.01" required>
+        </div>
+        <button type="submit">Convert</button>
+    </form>
+    <div id="result"></div>
+</div>
+
+<script>
+    const currencyForm = document.getElementById('currency-form');
+    const sourceCurrencySelect = document.getElementById('source-currency');
+    const targetCurrencySelect = document.getElementById('target-currency');
+    const amountInput = document.getElementById('amount');
+    const resultDiv = document.getElementById('result');
+
+    currencyForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const sourceCurrency = sourceCurrencySelect.value;
+        const targetCurrency = targetCurrencySelect.value;
+        const amount = parseFloat(amountInput.value);
+
+        const apiUrl = `https://api.exchangeratesapi.io/latest?base=${sourceCurrency}`;
+        
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data.error) {
+                resultDiv.textContent = `Error: ${data.error}`;
+                return;
+            }
+
+            const exchangeRate = data.rates[targetCurrency];
+            const convertedAmount = (amount * exchangeRate).toFixed(2);
+
+            resultDiv.textContent = `${amount} ${sourceCurrency} = ${convertedAmount} ${targetCurrency} (Exchange Rate: 1 ${sourceCurrency} = ${exchangeRate} ${targetCurrency})`;
+        } catch (error) {
+            resultDiv.textContent = `Error: ${error.message}`;
+        }
+    });
+
+</script>
+
+</body>
+</html>

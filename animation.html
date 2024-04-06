@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animated Div</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    #container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+    }
+    #moving-div {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-color: blue;
+        transition: transform 0.5s ease;
+    }
+    #control-button {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<div id="container">
+    <div id="moving-div"></div>
+</div>
+<button id="control-button">Move</button>
+
+<script>
+    const movingDiv = document.getElementById('moving-div');
+    const controlButton = document.getElementById('control-button');
+
+    let isMoved = false;
+
+    controlButton.addEventListener('click', function() {
+        if (!isMoved) {
+            movingDiv.style.transform = 'translateX(200px)';
+            isMoved = true;
+            controlButton.textContent = 'Reset';
+        } else {
+            movingDiv.style.transform = 'translateX(0)';
+            isMoved = false;
+            controlButton.textContent = 'Move';
+        }
+    });
+</script>
+
+</body>
+</html>
